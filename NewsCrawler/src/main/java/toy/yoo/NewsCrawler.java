@@ -1,7 +1,16 @@
 package toy.yoo;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -17,7 +26,13 @@ public class NewsCrawler extends WebCrawler {
 
 	private Pattern TODAY;
 	
+	private Set<String> comNameSet = new HashSet<String>();
+	
+	//private comLinkMap;
+	
 	NewsCrawler(){
+	
+
 		LocalDate now = LocalDate.now();
 		// 포맷 정의
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -25,6 +40,24 @@ public class NewsCrawler extends WebCrawler {
 		String formatedNow = now.format(formatter);
 
 		TODAY = Pattern.compile(".*"+formatedNow+".*$");
+
+		String companyFile = "F:\\company\\comlist.txt";
+
+		Scanner scanner;
+		
+		try {
+			scanner = new Scanner(new File(companyFile));
+			while (scanner.hasNextLine()) {
+				String str = scanner.nextLine();
+				String comName = str.split("|")[0];
+				comNameSet.add(comName);
+				System.out.println(comName);
+			}
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -49,19 +82,30 @@ public class NewsCrawler extends WebCrawler {
 	@Override
 	public void visit(Page page) {
 		String url = page.getWebURL().getURL();
-		System.out.println("URL: " + url);
-
+		//System.out.println("URL: " + url);
+		Map<String,List<String>>  comLinkMap = (Map<String, List<String>>) myController.getCustomData();
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String text = htmlParseData.getText();
-			String html = htmlParseData.getHtml();
-			Set<WebURL> links = htmlParseData.getOutgoingUrls();
+			//String html = htmlParseData.getHtml();
+			//Set<WebURL> links = htmlParseData.getOutgoingUrls();
 
-			System.out.println("Text length: " + text.length());
-			System.out.println("Html length: " + html.length());
-			System.out.println("Number of outgoing links: " + links.size());
+			for (Iterator<String> iterator = comNameSet.iterator(); iterator.hasNext();) {
+				String comName = iterator.next();
+				if(text.matches(comName)) {
+					if(comLinkMap.containsKey(comName)) {
+						comLinkMap.get(comName).add(url);
+					}else {
+						List<String> urlList = new ArrayList<String>();
+						urlList.add(url);
+						comLinkMap.put(comName, urlList);
+					}
+				}
+			}
 		}
 	}
+	
+
 
 
 
