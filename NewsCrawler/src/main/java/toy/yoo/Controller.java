@@ -45,9 +45,9 @@ public class Controller {
 //       controller.addSeed("https://www.ics.uci.edu/~welling/");
 //    	controller.addSeed("https://www.ics.uci.edu/");
     	
-        Map<String,List<String>> comLinkMap = new HashMap<String, List<String>>();
+
         
-        controller.setCustomData(comLinkMap);
+
     	// The factory which creates instances of crawlers.
         CrawlController.WebCrawlerFactory<NewsCrawler> factory = NewsCrawler::new;
         
@@ -58,11 +58,10 @@ public class Controller {
         controller.start(factory, numberOfCrawlers);
         
         
-        Set<String> keySet =  comLinkMap.keySet();
+        Set<String> keySet =  ComLinkMap.keySet();
         for (Iterator<String> iterator = keySet.iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			System.out.println(key);
-			
 		}
         
         

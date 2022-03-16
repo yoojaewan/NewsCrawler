@@ -83,7 +83,6 @@ public class NewsCrawler extends WebCrawler {
 	public void visit(Page page) {
 		String url = page.getWebURL().getURL();
 		//System.out.println("URL: " + url);
-		Map<String,List<String>>  comLinkMap = (Map<String, List<String>>) myController.getCustomData();
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String text = htmlParseData.getText();
@@ -93,13 +92,7 @@ public class NewsCrawler extends WebCrawler {
 			for (Iterator<String> iterator = comNameSet.iterator(); iterator.hasNext();) {
 				String comName = iterator.next();
 				if(text.matches(comName)) {
-					if(comLinkMap.containsKey(comName)) {
-						comLinkMap.get(comName).add(url);
-					}else {
-						List<String> urlList = new ArrayList<String>();
-						urlList.add(url);
-						comLinkMap.put(comName, urlList);
-					}
+					ComLinkMap.put(comName, url);
 				}
 			}
 		}
